@@ -1,0 +1,77 @@
+{
+  "beaches": [
+    {
+      "id": "86",
+      "name": "Ajstrup Strand",
+      "coords": [10.2712, 56.038],
+      "description": "Populær badestrand i Aarhus",
+      "municipality": "Aarhus",
+      "waterQuality": 2,
+      "waterTemperature": 13,
+      "airTemperature": 11,
+      "windSpeed": 8,
+      "comments": "Der forekommer færgebølger",
+      "facilities": "",
+      "links": ["https://aarhus.dk/borger/kultur-natur-og-idraet/ud-i-naturen/vil-du-paa-stranden"],
+      "thumbnail": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400",
+      "forecast": [
+        {
+          "date": "2025-11-03",
+          "water_quality": "2",
+          "water_temperature": "13",
+          "air_temperature": "11",
+          "wind_speed": "8"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Amager Strandpark, Nord",
+      "coords": [12.6412, 55.6633],
+      "description": "Badevandsprofilet er en badestrand på Øst Amager. Amager Strand består af stranden langs Amager Strandvej, en lagune, en ø og parkerne 10-øren og 5-øren.",
+      "municipality": "København",
+      "waterQuality": 2,
+      "waterTemperature": 12,
+      "airTemperature": 12,
+      "windSpeed": 5,
+      "comments": "",
+      "facilities": "Varslingssystemet med konstant overvågning af vandkvalitet. Livreddere fra 23. juni til sidste søndag i august, alle dage, kl. 10-18.",
+      "links": ["https://svoemkbh.kk.dk/svoemmeanlaeg/strande-og-helgoland/amager-strandpark"],
+      "thumbnail": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400",
+      "forecast": [
+        {
+          "date": "2025-11-03",
+          "water_quality": "2",
+          "water_temperature": "12",
+          "air_temperature": "12",
+          "wind_speed": "5"
+        }
+      ]
+    },
+    {
+      "id": "41",
+      "name": "Albuen",
+      "coords": [9.58048, 55.7043],
+      "description": "Badestrand i Vejle",
+      "municipality": "Vejle",
+      "waterQuality": 2,
+      "waterTemperature": 10,
+      "airTemperature": 10,
+      "windSpeed": 7,
+      "comments": "",
+      "facilities": "",
+      "links": [""],
+      "thumbnail": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400",
+      "forecast": [
+        {
+          "date": "2025-11-03",
+          "water_quality": "2",
+          "water_temperature": "10",
+          "air_temperature": "10",
+          "wind_speed": "7"
+        }
+      ]
+    }
+  ]
+}
+

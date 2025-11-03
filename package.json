@@ -5,7 +5,7 @@
   "main": "host/main.ts",
   "scripts": {
     "build": "tsx ./build-all.mts",
-    "start": "cd pizzaz_server_node && pnpm start",
+    "start": "cd badevandet_server_node && pnpm start",
     "serve": "serve -s ./assets -p 4444 --cors",
     "dev": "vite --config vite.config.mts",
     "tsc": "tsc -b",

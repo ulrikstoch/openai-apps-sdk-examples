@@ -357,6 +357,38 @@ const httpServer = createServer(
       return;
     }
 
+    // Serve static assets from the assets directory (check before MCP endpoints)
+    if (req.method === "GET" && url.pathname !== ssePath) {
+      const relativePath = url.pathname.startsWith("/") ? url.pathname.slice(1) : url.pathname;
+      const assetPath = path.join(ASSETS_DIR, relativePath);
+      const exists = fs.existsSync(assetPath);
+      const isFile = exists ? fs.statSync(assetPath).isFile() : false;
+      console.log(`[ASSET] ${req.method} ${url.pathname}`);
+      console.log(`  -> Path: ${assetPath}`);
+      console.log(`  -> Exists: ${exists}, IsFile: ${isFile}`);
+      if (exists && isFile) {
+        const ext = path.extname(assetPath).toLowerCase();
+        const contentTypes: Record<string, string> = {
+          ".html": "text/html",
+          ".js": "application/javascript",
+          ".css": "text/css",
+          ".json": "application/json",
+          ".png": "image/png",
+          ".jpg": "image/jpeg",
+          ".gif": "image/gif",
+          ".svg": "image/svg+xml",
+        };
+        const contentType = contentTypes[ext] || "application/octet-stream";
+        
+        res.writeHead(200, {
+          "Content-Type": contentType,
+          "Access-Control-Allow-Origin": "*",
+        });
+        fs.createReadStream(assetPath).pipe(res);
+        return;
+      }
+    }
+
     if (req.method === "GET" && url.pathname === ssePath) {
       await handleSseRequest(res);
       return;
@@ -367,7 +399,9 @@ const httpServer = createServer(
       return;
     }
 
-    res.writeHead(404).end("Not Found");
+    res.writeHead(404, {
+      "Access-Control-Allow-Origin": "*",
+    }).end("Not Found");
   }
 );
 

@@ -66,7 +66,7 @@ function BeachListItem({ beach, isSelected, onClick }) {
 export default function Sidebar({ beaches, selectedId, onSelect }) {
   const [emblaRef] = useEmblaCarousel({ dragFree: true, loop: false });
   const displayMode = useOpenAiGlobal("displayMode");
-  const forceMobile = displayMode !== "fullscreen";
+  const isFullscreen = displayMode === "fullscreen";
   const scrollRef = React.useRef(null);
   const [showBottomFade, setShowBottomFade] = React.useState(false);
 
@@ -94,30 +94,36 @@ export default function Sidebar({ beaches, selectedId, onSelect }) {
 
   return (
     <>
-      {/* Desktop/Tablet sidebar */}
+      {/* Sidebar - shown in both fullscreen and collapsed modes */}
       <div
-        className={`${
-          forceMobile ? "hidden" : ""
-        } absolute inset-y-0 bottom-4 left-0 z-20 w-[340px] max-w-[75%] pointer-events-auto`}
+        className={`absolute inset-y-0 left-0 z-20 pointer-events-auto ${
+          isFullscreen 
+            ? "bottom-4 w-[340px] max-w-[75%]" 
+            : "bottom-0 w-[280px] sm:w-[320px] max-w-[70%]"
+        }`}
       >
         <div
           ref={scrollRef}
-          className="relative px-2 h-full overflow-y-auto bg-white text-black"
+          className={`relative px-2 h-full overflow-y-auto bg-white text-black ${
+            isFullscreen 
+              ? "" 
+              : "rounded-tr-2xl border-r border-t border-black/10"
+          }`}
         >
-          <div className="flex justify-between flex-row items-center px-3 sticky bg-white top-0 py-4 text-md font-medium">
+          <div className={`flex justify-between flex-row items-center px-3 sticky bg-white top-0 text-md font-medium ${
+            isFullscreen ? "py-4" : "py-3"
+          }`}>
             {beaches.length} strande
             <div>
               <Settings2 className="h-5 w-5" aria-hidden="true" />
             </div>
           </div>
-          <div>
+          <div className={isFullscreen ? "" : "pb-3"}>
             {beaches.map((beach) => (
               <BeachListItem
                 key={beach.id}
                 beach={beach}
-                isSelected={
-                  displayMode === "fullscreen" && selectedId === beach.id
-                }
+                isSelected={isFullscreen && selectedId === beach.id}
                 onClick={() => onSelect(beach)}
               />
             ))}
@@ -145,31 +151,6 @@ export default function Sidebar({ beaches, selectedId, onSelect }) {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      {/* Mobile bottom carousel */}
-      <div
-        className={`${
-          forceMobile ? "" : "hidden"
-        } absolute inset-x-0 bottom-0 z-20 pointer-events-auto`}
-      >
-        <div className="pt-2 text-black">
-          <div className="overflow-hidden" ref={emblaRef}>
-            <div className="px-3 py-3 flex gap-3">
-              {beaches.map((beach) => (
-                <div key={beach.id} className="ring ring-black/10 max-w-[330px] w-full shadow-xl rounded-2xl bg-white">
-                  <BeachListItem
-                    beach={beach}
-                    isSelected={
-                      displayMode === "fullscreen" && selectedId === beach.id
-                    }
-                    onClick={() => onSelect(beach)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );

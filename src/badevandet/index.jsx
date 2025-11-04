@@ -242,7 +242,7 @@ export default function App() {
             "absolute inset-0 overflow-hidden" +
             (displayMode === "fullscreen"
               ? " left-[340px] right-2 top-2 bottom-4 border border-black/10 rounded-3xl"
-              : "")
+              : " left-[280px] sm:left-[320px]")
           }
         >
           <div

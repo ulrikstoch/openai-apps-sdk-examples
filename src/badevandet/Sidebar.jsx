@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useOpenAiGlobal } from "../use-openai-global";
-import { Settings2, Droplets, Wind, Thermometer, ChevronLeft, AlertTriangle, ExternalLink, Calendar } from "lucide-react";
+import { Settings2, Droplets, Wind, Thermometer, ChevronLeft, ChevronRight, AlertTriangle, ExternalLink, Calendar } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 function WaterQualityBadge({ quality, size = "default" }) {
@@ -226,8 +226,11 @@ function MobileBeachCard({ beach, onClick }) {
       className="bg-white rounded-2xl shadow-xl ring-1 ring-black/10 p-4 min-w-[280px] max-w-[320px] cursor-pointer hover:shadow-2xl transition-shadow"
     >
       <div className="mb-3">
-        <h3 className="font-semibold text-base text-black mb-0.5">{beach.name}</h3>
-        <p className="text-xs text-black/50 mb-2">{beach.municipality}</p>
+        <div className="flex items-center justify-between gap-2 mb-0.5">
+          <h3 className="font-semibold text-base text-black truncate">{beach.name}</h3>
+          <ChevronRight className="h-5 w-5 text-black/40 flex-none" />
+        </div>
+        <p className="text-xs text-black/50 mb-2 truncate">{beach.municipality}</p>
         <WaterQualityBadge quality={beach.waterQuality} size="medium" />
       </div>
       

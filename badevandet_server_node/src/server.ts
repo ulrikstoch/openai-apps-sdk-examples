@@ -167,6 +167,7 @@ const toolInputSchema = {
       description: "Filter by water quality: 1 = poor, 2 = good (optional).",
     },
   },
+  required: [],
   additionalProperties: false,
 } as const;
 

@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { createRoot } from "react-dom/client";
-import beaches from "./beaches.json";
+import beachesStatic from "./beaches.json";
 import { AnimatePresence } from "framer-motion";
 import Inspector from "./Inspector";
 import Sidebar from "./Sidebar";
 import { useOpenAiGlobal } from "../use-openai-global";
+import { useWidgetProps } from "../use-widget-props";
 import { useMaxHeight } from "../use-max-height";
 import { Maximize2 } from "lucide-react";
 import {
@@ -38,7 +39,11 @@ export default function App() {
   const mapRef = useRef(null);
   const mapObj = useRef(null);
   const markerObjs = useRef([]);
-  const beachList = beaches?.beaches || [];
+  
+  // Get beach data from backend (via useWidgetProps) or fall back to static data
+  const widgetProps = useWidgetProps({ beaches: beachesStatic.beaches });
+  const beachList = widgetProps?.beaches || beachesStatic.beaches || [];
+  
   const markerCoords = beachList.map((b) => b.coords);
   const navigate = useNavigate();
   const location = useLocation();

@@ -144,6 +144,24 @@ const widgets: BeachWidget[] = [
     html: readWidgetHtml("badevandet"),
     responseText: "Rendered a beach map with water quality information!",
   },
+  {
+    id: "beach-compare",
+    title: "Compare Beaches",
+    templateUri: "ui://widget/beach-compare.html",
+    invoking: "Comparing beach conditions",
+    invoked: "Beach comparison ready",
+    html: readWidgetHtml("badevandet-compare"),
+    responseText: "Created a detailed comparison of beaches!",
+  },
+  {
+    id: "beach-best",
+    title: "Find Best Beaches for Swimming",
+    templateUri: "ui://widget/beach-best.html",
+    invoking: "Finding the perfect swimming spots",
+    invoked: "Best beaches identified",
+    html: readWidgetHtml("badevandet-best"),
+    responseText: "Here are the best beaches for swimming right now!",
+  },
 ];
 
 const widgetsById = new Map<string, BeachWidget>();
@@ -154,7 +172,8 @@ widgets.forEach((widget) => {
   widgetsByUri.set(widget.templateUri, widget);
 });
 
-const toolInputSchema = {
+// Tool schemas for different tools
+const beachMapInputSchema = {
   type: "object",
   properties: {
     municipality: {
@@ -171,22 +190,101 @@ const toolInputSchema = {
   additionalProperties: false,
 } as const;
 
-const toolInputParser = z.object({
+const beachCompareInputSchema = {
+  type: "object",
+  properties: {
+    municipality: {
+      type: "string",
+      description: "Filter beaches by municipality name (optional).",
+    },
+    limit: {
+      type: "number",
+      description: "Number of top beaches to compare (default: 3, max: 10).",
+    },
+  },
+  required: [],
+  additionalProperties: false,
+} as const;
+
+const beachBestInputSchema = {
+  type: "object",
+  properties: {
+    minTemp: {
+      type: "number",
+      description: "Minimum water temperature in Celsius (optional, default: 12).",
+    },
+    maxWind: {
+      type: "number",
+      description: "Maximum wind speed in m/s (optional, default: 10).",
+    },
+    onlyGoodQuality: {
+      type: "boolean",
+      description: "Only show beaches with good water quality (optional, default: true).",
+    },
+    municipality: {
+      type: "string",
+      description: "Filter beaches by municipality name (optional).",
+    },
+  },
+  required: [],
+  additionalProperties: false,
+} as const;
+
+const beachMapInputParser = z.object({
   municipality: z.string().optional(),
   waterQualityFilter: z.union([z.literal(1), z.literal(2)]).optional(),
 });
 
-const tools: Tool[] = widgets.map((widget) => ({
-  name: widget.id,
-  description: widget.title,
-  inputSchema: toolInputSchema,
-  _meta: widgetMeta(widget),
-  annotations: {
-    destructiveHint: false,
-    openWorldHint: false,
-    readOnlyHint: true,
+const beachCompareInputParser = z.object({
+  municipality: z.string().optional(),
+  limit: z.number().min(2).max(10).optional(),
+});
+
+const beachBestInputParser = z.object({
+  minTemp: z.number().min(0).max(30).optional(),
+  maxWind: z.number().min(0).max(20).optional(),
+  onlyGoodQuality: z.boolean().optional(),
+  municipality: z.string().optional(),
+});
+
+const tools: Tool[] = [
+  {
+    name: "beach-map",
+    description: "Show an interactive map of Danish beaches with water quality, temperature, and weather information. Use this for geographical visualization of beaches.",
+    inputSchema: beachMapInputSchema,
+    title: "Show Beach Map",
+    _meta: widgetMeta(widgets[0]),
+    annotations: {
+      destructiveHint: false,
+      openWorldHint: false,
+      readOnlyHint: true,
+    },
   },
-}));
+  {
+    name: "beach-compare",
+    description: "Compare multiple beaches side-by-side to help decide which beach is best. Shows detailed comparison of water quality, temperature, wind conditions, and more.",
+    inputSchema: beachCompareInputSchema,
+    title: "Compare Beaches",
+    _meta: widgetMeta(widgets[1]),
+    annotations: {
+      destructiveHint: false,
+      openWorldHint: false,
+      readOnlyHint: true,
+    },
+  },
+  {
+    name: "beach-best",
+    description: "Find and rank the best beaches for swimming based on current conditions. Filters beaches by water quality, temperature, wind speed, and other criteria to recommend ideal swimming spots.",
+    inputSchema: beachBestInputSchema,
+    title: "Find Best Beaches for Swimming",
+    _meta: widgetMeta(widgets[2]),
+    annotations: {
+      destructiveHint: false,
+      openWorldHint: false,
+      readOnlyHint: true,
+    },
+  },
+];
 
 const resources: Resource[] = widgets.map((widget) => ({
   uri: widget.templateUri,
@@ -338,13 +436,68 @@ function createBadevandetServer(): Server {
         throw new Error(`Unknown tool: ${request.params.name}`);
       }
 
-      const args = toolInputParser.parse(request.params.arguments ?? {});
+      const toolName = request.params.name;
 
-      // Fetch beaches from API
-      const beaches = await fetchBeaches(
-        args.municipality,
-        args.waterQualityFilter
-      );
+      // Parse arguments based on tool type
+      let beaches: TransformedBeach[];
+      let structuredContent: any;
+
+      if (toolName === "beach-map") {
+        const args = beachMapInputParser.parse(request.params.arguments ?? {});
+        beaches = await fetchBeaches(args.municipality, args.waterQualityFilter);
+        structuredContent = {
+          beaches,
+          municipality: args.municipality,
+          waterQualityFilter: args.waterQualityFilter,
+        };
+      } else if (toolName === "beach-compare") {
+        const args = beachCompareInputParser.parse(request.params.arguments ?? {});
+        beaches = await fetchBeaches(args.municipality);
+        const limit = args.limit || 3;
+        // Rank beaches and take top N
+        const rankedBeaches = beaches
+          .map(beach => {
+            let score = 0;
+            if (beach.waterQuality === 2) score += 50;
+            score += beach.waterTemperature * 2;
+            score -= beach.windSpeed * 3;
+            return { ...beach, score };
+          })
+          .sort((a, b) => b.score - a.score)
+          .slice(0, limit);
+        structuredContent = {
+          beaches: rankedBeaches,
+          municipality: args.municipality,
+          limit,
+        };
+      } else if (toolName === "beach-best") {
+        const args = beachBestInputParser.parse(request.params.arguments ?? {});
+        beaches = await fetchBeaches(args.municipality);
+        
+        // Apply filters
+        let filtered = beaches;
+        const minTemp = args.minTemp || 12;
+        const maxWind = args.maxWind || 10;
+        const onlyGoodQuality = args.onlyGoodQuality !== false;
+        
+        if (onlyGoodQuality) {
+          filtered = filtered.filter(b => b.waterQuality === 2);
+        }
+        filtered = filtered.filter(b => b.waterTemperature >= minTemp);
+        filtered = filtered.filter(b => b.windSpeed <= maxWind);
+        
+        structuredContent = {
+          beaches: filtered,
+          criteria: {
+            minTemp,
+            maxWind,
+            onlyGoodQuality,
+          },
+          municipality: args.municipality,
+        };
+      } else {
+        throw new Error(`Unknown tool: ${toolName}`);
+      }
 
       return {
         content: [
@@ -353,11 +506,7 @@ function createBadevandetServer(): Server {
             text: widget.responseText,
           },
         ],
-        structuredContent: {
-          beaches: beaches,
-          municipality: args.municipality,
-          waterQualityFilter: args.waterQualityFilter,
-        },
+        structuredContent,
         _meta: widgetMeta(widget),
       };
     }

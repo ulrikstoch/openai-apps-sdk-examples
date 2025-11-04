@@ -22,6 +22,8 @@ const targets: string[] = [
   "pizzaz-list",
   "pizzaz-albums",
   "badevandet",
+  "badevandet-compare",
+  "badevandet-best",
 ];
 const builtNames: string[] = [];
 

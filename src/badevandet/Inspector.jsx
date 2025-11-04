@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Droplets, Wind, AlertTriangle, X, ExternalLink } from "lucide-react";
+import { Droplets, Wind, AlertTriangle, X, ExternalLink, Thermometer, Calendar } from "lucide-react";
 
 function WaterQualityBadge({ quality, size = "default" }) {
   const colors = {
@@ -22,37 +22,64 @@ function WaterQualityBadge({ quality, size = "default" }) {
   );
 }
 
-function ForecastDay({ data, isToday }) {
+function ForecastDay({ data, isToday, onClick, isExpanded }) {
   const date = new Date(data.date);
   const dayName = isToday ? "I dag" : date.toLocaleDateString("da-DK", { weekday: "short" });
+  const fullDate = date.toLocaleDateString("da-DK", { day: "numeric", month: "short" });
   const quality = parseInt(data.water_quality);
   
   return (
-    <div className={`p-3 rounded-xl ${isToday ? "bg-blue-50" : "bg-gray-50"}`}>
-      <div className="text-xs font-medium text-black/70 mb-2">{dayName}</div>
+    <div 
+      className={`p-3 rounded-xl cursor-pointer transition-all ${
+        isToday ? "bg-blue-50 ring-2 ring-blue-200" : "bg-gray-50 hover:bg-gray-100"
+      } ${isExpanded ? "col-span-2" : ""}`}
+      onClick={onClick}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-xs font-medium text-black/70">{dayName}</div>
+        <div className="text-xs text-black/50">{fullDate}</div>
+      </div>
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 text-sm">
           <Droplets className="h-3.5 w-3.5 text-blue-500" aria-hidden="true" />
           <span>{data.water_temperature}°C vand</span>
         </div>
+        {isExpanded && data.air_temperature && (
+          <div className="flex items-center gap-1.5 text-sm">
+            <Thermometer className="h-3.5 w-3.5 text-orange-500" aria-hidden="true" />
+            <span>{data.air_temperature}°C luft</span>
+          </div>
+        )}
         <div className="flex items-center gap-1.5 text-sm">
           <Wind className="h-3.5 w-3.5 text-gray-500" aria-hidden="true" />
           <span>{data.wind_speed} m/s</span>
+          {isExpanded && data.wind_direction_display && (
+            <span className="text-xs text-black/50">({data.wind_direction_display})</span>
+          )}
         </div>
         <div className="flex items-center gap-1.5 text-xs">
           <div className={`h-2 w-2 rounded-full ${quality === 2 ? "bg-green-500" : "bg-red-500"}`} />
-          <span className="text-black/60">{quality === 2 ? "God" : "Dårlig"}</span>
+          <span className="text-black/60">{quality === 2 ? "God kvalitet" : "Dårlig kvalitet"}</span>
         </div>
+        {isExpanded && data.precipitation && parseFloat(data.precipitation) > 0 && (
+          <div className="text-xs text-black/60 mt-2">
+            💧 Nedbør: {data.precipitation}mm
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 export default function Inspector({ beach, onClose }) {
+  const [expandedDay, setExpandedDay] = useState(null);
+  const [showFullForecast, setShowFullForecast] = useState(false);
+  
   if (!beach) return null;
   
   const hasWarning = beach.comments && beach.comments.toLowerCase().includes("badeforbud");
   const forecast = beach.forecast || [];
+  const displayedForecast = showFullForecast ? forecast : forecast.slice(0, 4);
   
   return (
     <motion.div
@@ -127,10 +154,29 @@ export default function Inspector({ beach, onClose }) {
 
           {forecast.length > 0 && (
             <div className="px-4 sm:px-5 pb-4">
-              <div className="text-lg font-medium mb-3">Prognose</div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-blue-500" aria-hidden="true" />
+                  <div className="text-lg font-medium">Prognose</div>
+                </div>
+                {forecast.length > 4 && (
+                  <button
+                    onClick={() => setShowFullForecast(!showFullForecast)}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {showFullForecast ? "Vis mindre" : `Vis alle ${forecast.length} dage`}
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-2">
-                {forecast.slice(0, 4).map((day, idx) => (
-                  <ForecastDay key={day.date} data={day} isToday={idx === 0} />
+                {displayedForecast.map((day, idx) => (
+                  <ForecastDay 
+                    key={day.date} 
+                    data={day} 
+                    isToday={idx === 0}
+                    isExpanded={expandedDay === idx}
+                    onClick={() => setExpandedDay(expandedDay === idx ? null : idx)}
+                  />
                 ))}
               </div>
             </div>

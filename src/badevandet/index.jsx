@@ -3,8 +3,6 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { createRoot } from "react-dom/client";
 import beachesStatic from "./beaches.json";
-import { AnimatePresence } from "framer-motion";
-import Inspector from "./Inspector";
 import Sidebar from "./Sidebar";
 import { useOpenAiGlobal } from "../use-openai-global";
 import { useWidgetProps } from "../use-widget-props";
@@ -57,7 +55,7 @@ export default function App() {
     zoom: markerCoords.length > 0 ? 7 : 7,
   }));
   const displayMode = useOpenAiGlobal("displayMode");
-  const allowInspector = displayMode === "fullscreen";
+  const isFullscreen = displayMode === "fullscreen";
   const maxHeight = useMaxHeight() ?? undefined;
 
   useEffect(() => {
@@ -119,34 +117,14 @@ export default function App() {
     });
   }
 
-  function getInspectorOffsetPx() {
-    if (displayMode !== "fullscreen") return 0;
-    if (typeof window === "undefined") return 0;
-    const isXlUp =
-      window.matchMedia && window.matchMedia("(min-width: 1280px)").matches;
-    const el = document.querySelector(".badevandet-inspector");
-    const w = el ? el.getBoundingClientRect().width : 360;
-    const half = Math.round(w / 2);
-    // xl: inspector on right → negative x offset; lg: inspector on left → positive x offset
-    return isXlUp ? -half : half;
-  }
-
-  function panTo(
-    coord,
-    { offsetForInspector } = { offsetForInspector: false }
-  ) {
+  function panTo(coord) {
     if (!mapObj.current) return;
-    const inspectorOffset = offsetForInspector ? getInspectorOffsetPx() : 0;
-    const flyOpts = {
+    mapObj.current.flyTo({
       center: coord,
       zoom: 14,
       speed: 1.2,
       curve: 1.6,
-    };
-    if (inspectorOffset) {
-      flyOpts.offset = [inspectorOffset, 0];
-    }
-    mapObj.current.flyTo(flyOpts);
+    });
   }
 
   useEffect(() => {
@@ -157,7 +135,7 @@ export default function App() {
   // Pan the map when the selected beach changes via routing
   useEffect(() => {
     if (!mapObj.current || !selectedBeach) return;
-    panTo(selectedBeach.coords, { offsetForInspector: true });
+    panTo(selectedBeach.coords);
   }, [selectedId]);
 
   // Ensure Mapbox resizes when container maxHeight/display mode changes
@@ -185,17 +163,17 @@ export default function App() {
       <div
         style={{
           maxHeight,
-          height: displayMode === "fullscreen" ? maxHeight - 40 : 480,
+          height: isFullscreen ? maxHeight - 40 : 480,
         }}
         className={
           "relative antialiased w-full min-h-[480px] overflow-hidden " +
-          (displayMode === "fullscreen"
+          (isFullscreen
             ? "rounded-none border-0"
             : "border border-black/10 dark:border-white/10 rounded-2xl sm:rounded-3xl")
         }
       >
         <Outlet />
-        {displayMode !== "fullscreen" && (
+        {!isFullscreen && (
           <button
             aria-label="Enter fullscreen"
             className="absolute top-4 right-4 z-30 rounded-full bg-white text-black shadow-lg ring ring-black/5 p-2.5 pointer-events-auto"
@@ -215,34 +193,24 @@ export default function App() {
             />
           </button>
         )}
-        {/* Sidebar */}
+        
+        {/* Sidebar with integrated detail view (desktop) or floating cards (mobile) */}
         <Sidebar
           beaches={beachList}
           selectedId={selectedId}
           onSelect={(beach) => {
             navigate(`/beach/${beach.id}`);
-            panTo(beach.coords, { offsetForInspector: true });
+            panTo(beach.coords);
           }}
         />
-
-        {/* Inspector (right) */}
-        <AnimatePresence>
-          {allowInspector && selectedBeach && (
-            <Inspector
-              key={selectedBeach.id}
-              beach={selectedBeach}
-              onClose={() => navigate("..")}
-            />
-          )}
-        </AnimatePresence>
 
         {/* Map */}
         <div
           className={
             "absolute inset-0 overflow-hidden" +
-            (displayMode === "fullscreen"
+            (isFullscreen
               ? " left-[340px] right-2 top-2 bottom-4 border border-black/10 rounded-3xl"
-              : " left-[280px] sm:left-[320px]")
+              : "")
           }
         >
           <div
@@ -250,27 +218,11 @@ export default function App() {
             className="w-full h-full absolute bottom-0 left-0 right-0"
             style={{
               maxHeight,
-              height: displayMode === "fullscreen" ? maxHeight : undefined,
+              height: isFullscreen ? maxHeight : undefined,
             }}
           />
         </div>
       </div>
-
-      {/* Suggestion chips (bottom, fullscreen) */}
-      {displayMode === "fullscreen" && (
-        <div className="hidden antialiased md:flex absolute inset-x-0 bottom-2 z-30 justify-center pointer-events-none">
-          <div className="flex gap-3 pointer-events-auto">
-            {["God vandkvalitet", "København", "Aarhus"].map((label) => (
-              <button
-                key={label}
-                className="rounded-full font-base bg-white ring ring-black/10 text-black px-4 py-1.5 text-sm hover:bg-[#f7f7f7] cursor-pointer"
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }

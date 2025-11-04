@@ -180,7 +180,6 @@ const tools: Tool[] = widgets.map((widget) => ({
   name: widget.id,
   description: widget.title,
   inputSchema: toolInputSchema,
-  title: widget.title,
   _meta: widgetMeta(widget),
   annotations: {
     destructiveHint: false,

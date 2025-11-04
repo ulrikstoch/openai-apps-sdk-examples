@@ -42,12 +42,9 @@ function BeachListItem({ beach, isSelected, onClick }) {
         } hover:border-black/0`}
       >
         <button
-          className="w-full text-left py-3 transition flex gap-3 items-center"
+          className="w-full text-left py-3 transition flex gap-3 items-center justify-between"
           onClick={onClick}
         >
-          <div className="flex-none">
-            <WaterQualityBadge quality={beach.waterQuality} size="medium" />
-          </div>
           <div className="min-w-0 flex-1">
             <div className="font-semibold text-sm truncate">{beach.name}</div>
             <div className="text-xs text-black/50 truncate mb-1">
@@ -63,6 +60,9 @@ function BeachListItem({ beach, isSelected, onClick }) {
                 {beach.windSpeed} m/s
               </span>
             </div>
+          </div>
+          <div className="flex-none ml-2">
+            <WaterQualityBadge quality={beach.waterQuality} />
           </div>
         </button>
       </div>
@@ -225,11 +225,9 @@ function MobileBeachCard({ beach, onClick }) {
       onClick={onClick}
       className="bg-white rounded-2xl shadow-xl ring-1 ring-black/10 p-4 min-w-[280px] max-w-[320px] cursor-pointer hover:shadow-2xl transition-shadow"
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 mr-2">
-          <h3 className="font-semibold text-base text-black mb-0.5">{beach.name}</h3>
-          <p className="text-xs text-black/50">{beach.municipality}</p>
-        </div>
+      <div className="mb-3">
+        <h3 className="font-semibold text-base text-black mb-0.5">{beach.name}</h3>
+        <p className="text-xs text-black/50 mb-2">{beach.municipality}</p>
         <WaterQualityBadge quality={beach.waterQuality} size="medium" />
       </div>
       

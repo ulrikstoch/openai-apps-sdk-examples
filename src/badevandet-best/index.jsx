@@ -11,8 +11,8 @@ import beachesStatic from "../badevandet/beaches.json";
 
 function WaterQualityBadge({ quality }) {
   const colors = {
-    1: "bg-red-500 text-white",
-    2: "bg-green-500 text-white",
+    1: "bg-red-600 text-white",
+    2: "bg-green-600 text-white",
   };
   const labels = {
     1: "Dårlig",
@@ -20,7 +20,7 @@ function WaterQualityBadge({ quality }) {
   };
   
   return (
-    <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs ${colors[quality] || "bg-gray-400 text-white"}`}>
+    <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs ${colors[quality] || "bg-gray-500 text-white"}`}>
       <div className="h-1.5 w-1.5 rounded-full bg-white" />
       <span>{labels[quality] || "?"}</span>
     </div>
@@ -28,20 +28,20 @@ function WaterQualityBadge({ quality }) {
 }
 
 function ScoreBadge({ score }) {
-  let color = "bg-gray-500";
+  let color = "bg-gray-600";
   let label = "OK";
   
   if (score >= 85) {
-    color = "bg-green-500";
+    color = "bg-green-600";
     label = "Fremragende";
   } else if (score >= 70) {
-    color = "bg-blue-500";
+    color = "bg-blue-600";
     label = "God";
   } else if (score >= 50) {
-    color = "bg-yellow-500";
+    color = "bg-yellow-600";
     label = "Acceptabel";
   } else {
-    color = "bg-orange-500";
+    color = "bg-orange-600";
     label = "Mindre god";
   }
   
@@ -68,7 +68,7 @@ function BeachRecommendationCard({ beach, rank, showDetails }) {
       <div className="relative h-48 overflow-hidden">
         <img 
           src={beach.thumbnail} 
-          alt={beach.name}
+          alt={`Strand billede af ${beach.name} i ${beach.municipality}`}
           className="w-full h-full object-cover"
         />
         <div className="absolute top-3 left-3">
@@ -95,19 +95,19 @@ function BeachRecommendationCard({ beach, rank, showDetails }) {
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="text-center p-2 bg-blue-50 rounded-lg">
-            <Droplets className="h-5 w-5 text-blue-500 mx-auto mb-1" />
-            <div className="text-sm font-semibold text-blue-700">{beach.waterTemperature}°C</div>
+          <div className="text-center p-2 bg-blue-100 rounded-lg">
+            <Droplets className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+            <div className="text-sm font-semibold text-blue-800">{beach.waterTemperature}°C</div>
             <div className="text-xs text-black/60">Vand</div>
           </div>
-          <div className="text-center p-2 bg-orange-50 rounded-lg">
-            <Thermometer className="h-5 w-5 text-orange-500 mx-auto mb-1" />
-            <div className="text-sm font-semibold text-orange-700">{beach.airTemperature}°C</div>
+          <div className="text-center p-2 bg-orange-100 rounded-lg">
+            <Thermometer className="h-5 w-5 text-orange-600 mx-auto mb-1" />
+            <div className="text-sm font-semibold text-orange-800">{beach.airTemperature}°C</div>
             <div className="text-xs text-black/60">Luft</div>
           </div>
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <Wind className="h-5 w-5 text-gray-500 mx-auto mb-1" />
-            <div className="text-sm font-semibold text-gray-700">{beach.windSpeed} m/s</div>
+          <div className="text-center p-2 bg-gray-100 rounded-lg">
+            <Wind className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <div className="text-sm font-semibold text-gray-800">{beach.windSpeed} m/s</div>
             <div className="text-xs text-black/60">Vind</div>
           </div>
         </div>
@@ -129,7 +129,7 @@ function BeachRecommendationCard({ beach, rank, showDetails }) {
             {beach.description && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="text-sm text-blue-700 hover:text-blue-800 font-medium"
               >
                 {expanded ? "Vis mindre" : "Læs mere"}
               </button>

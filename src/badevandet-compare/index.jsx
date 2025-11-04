@@ -8,8 +8,8 @@ import beachesStatic from "../badevandet/beaches.json";
 
 function WaterQualityBadge({ quality, size = "default" }) {
   const colors = {
-    1: "bg-red-500 text-white",
-    2: "bg-green-500 text-white",
+    1: "bg-red-600 text-white",
+    2: "bg-green-600 text-white",
   };
   const labels = {
     1: "Dårlig",
@@ -19,7 +19,7 @@ function WaterQualityBadge({ quality, size = "default" }) {
   const sizeClasses = size === "large" ? "px-3 py-1.5 text-sm" : "px-2 py-1 text-xs";
   
   return (
-    <div className={`inline-flex items-center gap-1.5 rounded-full ${colors[quality] || "bg-gray-400 text-white"} ${sizeClasses}`}>
+    <div className={`inline-flex items-center gap-1.5 rounded-full ${colors[quality] || "bg-gray-500 text-white"} ${sizeClasses}`}>
       <div className="h-1.5 w-1.5 rounded-full bg-white" />
       <span>{labels[quality] || "?"}</span>
     </div>
@@ -28,9 +28,9 @@ function WaterQualityBadge({ quality, size = "default" }) {
 
 function ComparisonCard({ beach, rank }) {
   const rankColors = {
-    1: "bg-yellow-50 ring-yellow-200",
-    2: "bg-gray-50 ring-gray-200",
-    3: "bg-orange-50 ring-orange-200",
+    1: "bg-yellow-100 ring-yellow-300",
+    2: "bg-gray-100 ring-gray-300",
+    3: "bg-orange-100 ring-orange-300",
   };
   
   const rankEmojis = {
@@ -58,31 +58,31 @@ function ComparisonCard({ beach, rank }) {
       <div className="space-y-2.5">
         <div className="flex items-center justify-between p-2 bg-white rounded-lg">
           <div className="flex items-center gap-2 text-sm">
-            <Droplets className="h-4 w-4 text-blue-500" />
+            <Droplets className="h-4 w-4 text-blue-600" />
             <span className="text-black/70">Vandtemperatur</span>
           </div>
-          <span className="font-semibold text-blue-600">{beach.waterTemperature}°C</span>
+          <span className="font-semibold text-blue-800">{beach.waterTemperature}°C</span>
         </div>
 
         <div className="flex items-center justify-between p-2 bg-white rounded-lg">
           <div className="flex items-center gap-2 text-sm">
-            <Thermometer className="h-4 w-4 text-orange-500" />
+            <Thermometer className="h-4 w-4 text-orange-600" />
             <span className="text-black/70">Lufttemperatur</span>
           </div>
-          <span className="font-semibold text-orange-600">{beach.airTemperature}°C</span>
+          <span className="font-semibold text-orange-800">{beach.airTemperature}°C</span>
         </div>
 
         <div className="flex items-center justify-between p-2 bg-white rounded-lg">
           <div className="flex items-center gap-2 text-sm">
-            <Wind className="h-4 w-4 text-gray-500" />
+            <Wind className="h-4 w-4 text-gray-600" />
             <span className="text-black/70">Vind</span>
           </div>
-          <span className="font-semibold text-gray-700">{beach.windSpeed} m/s</span>
+          <span className="font-semibold text-gray-800">{beach.windSpeed} m/s</span>
         </div>
       </div>
 
       {beach.comments && (
-        <div className="mt-3 p-2 bg-amber-50 rounded-lg">
+        <div className="mt-3 p-2 bg-amber-100 rounded-lg">
           <p className="text-xs text-amber-900">{beach.comments}</p>
         </div>
       )}
@@ -95,15 +95,15 @@ function ComparisonTable({ beaches }) {
   const lowestWind = Math.min(...beaches.map(b => b.windSpeed));
 
   const getTempIcon = (temp) => {
-    if (temp === bestTemp) return <TrendingUp className="h-4 w-4 text-green-500" />;
-    if (temp === Math.min(...beaches.map(b => b.waterTemperature))) return <TrendingDown className="h-4 w-4 text-blue-400" />;
-    return <Minus className="h-4 w-4 text-gray-400" />;
+    if (temp === bestTemp) return <TrendingUp className="h-4 w-4 text-green-600" />;
+    if (temp === Math.min(...beaches.map(b => b.waterTemperature))) return <TrendingDown className="h-4 w-4 text-blue-600" />;
+    return <Minus className="h-4 w-4 text-gray-500" />;
   };
 
   const getWindIcon = (wind) => {
-    if (wind === lowestWind) return <TrendingDown className="h-4 w-4 text-green-500" />;
-    if (wind === Math.max(...beaches.map(b => b.windSpeed))) return <TrendingUp className="h-4 w-4 text-red-400" />;
-    return <Minus className="h-4 w-4 text-gray-400" />;
+    if (wind === lowestWind) return <TrendingDown className="h-4 w-4 text-green-600" />;
+    if (wind === Math.max(...beaches.map(b => b.windSpeed))) return <TrendingUp className="h-4 w-4 text-red-600" />;
+    return <Minus className="h-4 w-4 text-gray-500" />;
   };
 
   return (

@@ -6,8 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 
 function WaterQualityBadge({ quality, size = "default" }) {
   const colors = {
-    1: "bg-red-500 text-white",
-    2: "bg-green-500 text-white",
+    1: "bg-red-600 text-white",
+    2: "bg-green-600 text-white",
   };
   const labels = {
     1: "Dårlig kvalitet",
@@ -21,7 +21,7 @@ function WaterQualityBadge({ quality, size = "default" }) {
     : "px-2 py-1 text-xs";
   
   return (
-    <div className={`inline-flex items-center gap-2 rounded-full ${colors[quality] || "bg-gray-400 text-white"} ${sizeClasses}`}>
+    <div className={`inline-flex items-center gap-2 rounded-full ${colors[quality] || "bg-gray-500 text-white"} ${sizeClasses}`}>
       <div className={`rounded-full bg-white ${size === "large" ? "h-2.5 w-2.5" : "h-2 w-2"}`} />
       <span>{labels[quality] || "Ukendt"}</span>
     </div>
@@ -114,28 +114,28 @@ function BeachDetailView({ beach, onBack }) {
 
         {/* Current Conditions - Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-blue-50 rounded-xl p-3">
-            <div className="flex items-center gap-2 text-blue-700 mb-1">
+          <div className="bg-blue-100 rounded-xl p-3">
+            <div className="flex items-center gap-2 text-blue-800 mb-1">
               <Droplets className="h-4 w-4" />
               <span className="text-xs font-medium">Vandtemperatur</span>
             </div>
-            <div className="text-2xl font-bold text-blue-900">{beach.waterTemperature}°C</div>
+            <div className="text-2xl font-bold text-blue-950">{beach.waterTemperature}°C</div>
           </div>
           
-          <div className="bg-orange-50 rounded-xl p-3">
-            <div className="flex items-center gap-2 text-orange-700 mb-1">
+          <div className="bg-orange-100 rounded-xl p-3">
+            <div className="flex items-center gap-2 text-orange-800 mb-1">
               <Thermometer className="h-4 w-4" />
               <span className="text-xs font-medium">Lufttemperatur</span>
             </div>
-            <div className="text-2xl font-bold text-orange-900">{beach.airTemperature}°C</div>
+            <div className="text-2xl font-bold text-orange-950">{beach.airTemperature}°C</div>
           </div>
           
-          <div className="bg-gray-50 rounded-xl p-3 col-span-2">
-            <div className="flex items-center gap-2 text-gray-700 mb-1">
+          <div className="bg-gray-100 rounded-xl p-3 col-span-2">
+            <div className="flex items-center gap-2 text-gray-800 mb-1">
               <Wind className="h-4 w-4" />
               <span className="text-xs font-medium">Vindhastighed</span>
             </div>
-            <div className="text-2xl font-bold text-gray-900">{beach.windSpeed} m/s</div>
+            <div className="text-2xl font-bold text-gray-950">{beach.windSpeed} m/s</div>
           </div>
         </div>
 
@@ -179,19 +179,19 @@ function BeachDetailView({ beach, onBack }) {
                 const quality = parseInt(day.water_quality);
                 
                 return (
-                  <div key={day.date} className={`p-2 rounded-lg ${idx === 0 ? "bg-blue-50" : "bg-gray-50"}`}>
+                  <div key={day.date} className={`p-2 rounded-lg ${idx === 0 ? "bg-blue-100" : "bg-gray-100"}`}>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-black/70">{dayName}</span>
                       <div className="flex items-center gap-2 text-xs">
                         <span className="flex items-center gap-1">
-                          <Droplets className="h-3 w-3 text-blue-500" />
+                          <Droplets className="h-3 w-3 text-blue-600" />
                           {day.water_temperature}°C
                         </span>
                         <span className="flex items-center gap-1">
-                          <Wind className="h-3 w-3 text-gray-500" />
+                          <Wind className="h-3 w-3 text-gray-600" />
                           {day.wind_speed} m/s
                         </span>
-                        <div className={`h-2 w-2 rounded-full ${quality === 2 ? "bg-green-500" : "bg-red-500"}`} />
+                        <div className={`h-2 w-2 rounded-full ${quality === 2 ? "bg-green-600" : "bg-red-600"}`} />
                       </div>
                     </div>
                   </div>
@@ -235,19 +235,19 @@ function MobileBeachCard({ beach, onClick }) {
       </div>
       
       <div className="grid grid-cols-3 gap-2">
-        <div className="text-center p-2 bg-blue-50 rounded-lg">
-          <Droplets className="h-4 w-4 text-blue-500 mx-auto mb-1" />
-          <div className="text-sm font-semibold text-blue-700">{beach.waterTemperature}°C</div>
+        <div className="text-center p-2 bg-blue-100 rounded-lg">
+          <Droplets className="h-4 w-4 text-blue-600 mx-auto mb-1" />
+          <div className="text-sm font-semibold text-blue-800">{beach.waterTemperature}°C</div>
           <div className="text-xs text-black/50">Vand</div>
         </div>
-        <div className="text-center p-2 bg-orange-50 rounded-lg">
-          <Thermometer className="h-4 w-4 text-orange-500 mx-auto mb-1" />
-          <div className="text-sm font-semibold text-orange-700">{beach.airTemperature}°C</div>
+        <div className="text-center p-2 bg-orange-100 rounded-lg">
+          <Thermometer className="h-4 w-4 text-orange-600 mx-auto mb-1" />
+          <div className="text-sm font-semibold text-orange-800">{beach.airTemperature}°C</div>
           <div className="text-xs text-black/50">Luft</div>
         </div>
-        <div className="text-center p-2 bg-gray-50 rounded-lg">
-          <Wind className="h-4 w-4 text-gray-500 mx-auto mb-1" />
-          <div className="text-sm font-semibold text-gray-700">{beach.windSpeed}</div>
+        <div className="text-center p-2 bg-gray-100 rounded-lg">
+          <Wind className="h-4 w-4 text-gray-600 mx-auto mb-1" />
+          <div className="text-sm font-semibold text-gray-800">{beach.windSpeed}</div>
           <div className="text-xs text-black/50">m/s</div>
         </div>
       </div>
